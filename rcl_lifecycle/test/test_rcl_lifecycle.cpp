@@ -133,14 +133,23 @@ TEST(TestRclLifecycle, lifecycle_transition) {
 
   ret = rcl_lifecycle_transition_init(
     &transition, expected_id, &expected_label[0], nullptr, nullptr, &allocator);
-  EXPECT_EQ(ret, RCL_RET_OK);
+  EXPECT_EQ(ret, RCL_RET_OK) << rcl_get_error_string().str;
+  rcutils_reset_error();
+  ret = rcl_lifecycle_transition_fini(&transition, &allocator);
+  EXPECT_EQ(ret, RCL_RET_OK) << rcl_get_error_string().str;
   rcutils_reset_error();
 
   ret = rcl_lifecycle_transition_init(
     &transition, expected_id, &expected_label[0], start, nullptr, &allocator);
-  EXPECT_EQ(ret, RCL_RET_OK);
+  EXPECT_EQ(ret, RCL_RET_OK) << rcl_get_error_string().str;
+  rcutils_reset_error();
+  ret = rcl_lifecycle_transition_fini(&transition, &allocator);
+  EXPECT_EQ(ret, RCL_RET_OK) << rcl_get_error_string().str;
   rcutils_reset_error();
 
+  start = reinterpret_cast<rcl_lifecycle_state_t *>(
+    allocator.allocate(sizeof(rcl_lifecycle_state_t), allocator.state));
+  *start = rcl_lifecycle_get_zero_initialized_state();
   rcl_allocator_t bad_allocator = rcl_get_default_allocator();
   bad_allocator.allocate = bad_malloc;
   bad_allocator.reallocate = bad_realloc;
@@ -192,8 +201,9 @@ TEST(TestRclLifecycle, state_machine) {
 
   OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(
   {
-    ASSERT_EQ(RCL_RET_OK, rcl_shutdown(&context));
-    ASSERT_EQ(RCL_RET_OK, rcl_context_fini(&context));
+    ASSERT_EQ(RCL_RET_OK, rcl_node_fini(&node)) << rcl_get_error_string().str;
+    ASSERT_EQ(RCL_RET_OK, rcl_shutdown(&context)) << rcl_get_error_string().str;
+    ASSERT_EQ(RCL_RET_OK, rcl_context_fini(&context)) << rcl_get_error_string().str;
   });
 
   ret = rcl_node_init(&node, "node", "namespace", &context, &options);
@@ -326,6 +336,7 @@ TEST(TestRclLifecycle, state_machine) {
   // Node is null
   ret = rcl_lifecycle_state_machine_fini(&state_machine, nullptr, &allocator);
   EXPECT_EQ(ret, RCL_RET_ERROR);
+  rcutils_reset_error();
   std::cout << "state_machine: " << __LINE__ << std::endl;
 }
 
@@ -351,8 +362,9 @@ TEST(TestRclLifecycle, state_transitions) {
 
   OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(
   {
-    ASSERT_EQ(RCL_RET_OK, rcl_shutdown(&context));
-    ASSERT_EQ(RCL_RET_OK, rcl_context_fini(&context));
+    ASSERT_EQ(RCL_RET_OK, rcl_node_fini(&node)) << rcl_get_error_string().str;
+    ASSERT_EQ(RCL_RET_OK, rcl_shutdown(&context)) << rcl_get_error_string().str;
+    ASSERT_EQ(RCL_RET_OK, rcl_context_fini(&context)) << rcl_get_error_string().str;
   });
 
   ret = rcl_node_init(&node, "node", "namespace", &context, &options);

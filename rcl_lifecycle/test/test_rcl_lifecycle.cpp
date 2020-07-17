@@ -199,15 +199,15 @@ TEST(TestRclLifecycle, state_machine) {
   ret = rcl_init(0, nullptr, &init_options, &context);
   EXPECT_EQ(ret, RCL_RET_OK) << rcl_get_error_string().str;
 
+  ret = rcl_node_init(&node, "node", "namespace", &context, &options);
+  EXPECT_EQ(ret, RCL_RET_OK) << rcl_get_error_string().str;
+
   OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(
   {
     ASSERT_EQ(RCL_RET_OK, rcl_node_fini(&node)) << rcl_get_error_string().str;
     ASSERT_EQ(RCL_RET_OK, rcl_shutdown(&context)) << rcl_get_error_string().str;
     ASSERT_EQ(RCL_RET_OK, rcl_context_fini(&context)) << rcl_get_error_string().str;
   });
-
-  ret = rcl_node_init(&node, "node", "namespace", &context, &options);
-  EXPECT_EQ(ret, RCL_RET_OK) << rcl_get_error_string().str;
 
   const rosidl_message_type_support_t * pn =
     ROSIDL_GET_MSG_TYPE_SUPPORT(lifecycle_msgs, msg, TransitionEvent);
@@ -360,15 +360,15 @@ TEST(TestRclLifecycle, state_transitions) {
   ret = rcl_init(0, nullptr, &init_options, &context);
   EXPECT_EQ(ret, RCL_RET_OK) << rcl_get_error_string().str;
 
+  ret = rcl_node_init(&node, "node", "namespace", &context, &options);
+  EXPECT_EQ(ret, RCL_RET_OK) << rcl_get_error_string().str;
+
   OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(
   {
     ASSERT_EQ(RCL_RET_OK, rcl_node_fini(&node)) << rcl_get_error_string().str;
     ASSERT_EQ(RCL_RET_OK, rcl_shutdown(&context)) << rcl_get_error_string().str;
     ASSERT_EQ(RCL_RET_OK, rcl_context_fini(&context)) << rcl_get_error_string().str;
   });
-
-  ret = rcl_node_init(&node, "node", "namespace", &context, &options);
-  EXPECT_EQ(ret, RCL_RET_OK) << rcl_get_error_string().str;
 
   const rosidl_message_type_support_t * pn =
     ROSIDL_GET_MSG_TYPE_SUPPORT(lifecycle_msgs, msg, TransitionEvent);

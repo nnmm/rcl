@@ -38,6 +38,7 @@ public:
   rcl_context_t * context_ptr;
   rcl_node_t * node_ptr;
   const rcl_allocator_t * allocator;
+
   void SetUp()
   {
     rcl_ret_t ret;
@@ -116,7 +117,7 @@ TEST_F(TestDefaultStateMachine, default_init) {
   // Because this init method is so complex, the succession of failures caused by a null
   // allocator will result in several error messages overwriting themselves.
   auto ret = rcl_lifecycle_init_default_state_machine(&state_machine, nullptr);
-  EXPECT_EQ(RCL_RET_ERROR, ret);
+  EXPECT_EQ(RCL_RET_ERROR, ret) << rcl_get_error_string().str;
   rcutils_reset_error();
 
   ret = rcl_lifecycle_init_default_state_machine(&state_machine, this->allocator);

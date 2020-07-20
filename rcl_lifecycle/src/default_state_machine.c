@@ -697,6 +697,7 @@ fail:
   // Concatenate the error strings if that happens
   if (rcl_error_is_set()) {
     fail_error_message = rcl_get_error_string().str;
+    rcl_reset_error();
   }
 
   if (rcl_lifecycle_transition_map_fini(&state_machine->transition_map, allocator) != RCL_RET_OK) {
